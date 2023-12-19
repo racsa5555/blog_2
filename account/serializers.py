@@ -62,3 +62,7 @@ class LoginSerializer(serializers.Serializer):
                 'username not found'
             )
         return username
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = User
