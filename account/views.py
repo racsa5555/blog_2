@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from .serializers import RegisterSerializer, LoginSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.contrib.auth.models import User
 
 
@@ -41,9 +41,19 @@ class LogoutView(APIView):
 
 # написать UserListAPIView на generics запрос возвращает всех существующих ползователей
     
-from serializers import UserSerializer
+from .serializers import UserSerializer
 from rest_framework import generics
 
-class UserListAPIView(generics.ListCreateAPIView):
+class UserListAPIView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class UserDetailAPIView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class UserDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'id'
+    permission_classes = [IsAuthenticated, IsAdminUser]
