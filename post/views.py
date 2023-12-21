@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions, mixins
+from rest_framework import generics, permissions, mixins, viewsets
 from rest_framework.viewsets import ModelViewSet
 from .serializers import PostSerializer
 from .models import Post
@@ -17,6 +17,9 @@ class PostDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
 
 # написать FullCRUD на ModelViewSet(Post)
 # n+1 & lazy queryset
