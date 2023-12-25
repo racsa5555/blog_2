@@ -9,4 +9,5 @@ class Category(models.Model):
         null=True, blank=True,
         related_name = 'children'       
         )
-    
+    def __str__(self):
+        return self.name
