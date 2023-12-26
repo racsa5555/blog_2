@@ -4,16 +4,27 @@ import django_filters
 from post.filters import PostModelFilter
 from .serializers import PostSerializer
 from .models import Post
+from rest_framework.filters import SearchFilter
+from rest_framework.pagination import PageNumberPagination
+
+class StandartResultPagination(PageNumberPagination):
+    page_size = 2
+    page_query_param = 'page'
+
 
 class PostListCreateAPIView(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
-    filterset_class = PostModelFilter
+    filter_backends = [SearchFilter,django_filters.rest_framework.DjangoFilterBackend]
+    filterset_fields = ['category',]
+    pagination_class = StandartResultPagination
+    filter_class = PostModelFilter
+
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
     def get_queryset(self):
         queryset = super().get_queryset()
         search_query = self.request.query_params.get('search', None)
