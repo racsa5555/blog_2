@@ -4,23 +4,23 @@ import django_filters
 from post.filters import PostModelFilter
 from .serializers import PostSerializer
 from .models import Post
-from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.pagination import PageNumberPagination
 
+from rest_framework.pagination import PageNumberPagination
+from .permissions import IsStuff
 class StandartResultPagination(PageNumberPagination):
-    page_size = 1
-    page_query_param = 'page'
+    page_size = 2
+    page_query_param= 'page'
 
 class PostListCreateAPIView(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsStuff]
     pagination_class = StandartResultPagination
     filter_backends = (SearchFilter, DjangoFilterBackend)
     search_fields = ['title', 'body']
     filterset_fields = ['category']
     # filterset_class = PostModelFilter
+
 
     def perform_create(self, serializer):
         posts = Post.objects.select_related('category')
