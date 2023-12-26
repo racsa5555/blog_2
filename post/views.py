@@ -1,31 +1,36 @@
 from rest_framework import generics, permissions, mixins, viewsets
 from rest_framework.viewsets import ModelViewSet
-import django_filters
 from post.filters import PostModelFilter
 from .serializers import PostSerializer
 from .models import Post
-
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
-from .permissions import IsStuff
+from .permissions import IsStuff, IsOwner
+
 class StandartResultPagination(PageNumberPagination):
     page_size = 2
     page_query_param= 'page'
 
-class PostListCreateAPIView(generics.ListCreateAPIView):
+class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated, IsStuff]
+    # permission_classes = [permissions.IsAuthenticated, IsStuff]
     pagination_class = StandartResultPagination
     filter_backends = (SearchFilter, DjangoFilterBackend)
     search_fields = ['title', 'body']
     filterset_fields = ['category']
     # filterset_class = PostModelFilter
 
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'PUT', 'DELETE']:
+            return [permissions.IsAuthenticated(), IsOwner()]
+        return [permissions.AllowAny()]
 
     def perform_create(self, serializer):
-        posts = Post.objects.select_related('category')
-        for post in posts:
-            print(post.category)
+        # posts = Post.objects.select_related('category')
+        # for post in posts:
+        #     print(post.category)
         
         serializer.save(owner=self.request.user)
     # def get_queryset(self):
@@ -60,3 +65,6 @@ class PostListCreateAPIView(generics.ListCreateAPIView):
 # mixins | generics
 # написать логику поиска и филтрации для постов
 # написать кастомный permission который проверяет поле is_staff| staff status
+# написать модельку комметариев в отделном приложении "comment"
+# с полями content, owner, created_at, post
+# crud & serializer & @action
