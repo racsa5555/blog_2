@@ -42,11 +42,13 @@ INSTALLED_APPS = [
     # libs
     'rest_framework',
     'rest_framework.authtoken',
-    'django_filters',
+    "django_filters",
+
     # apps
     'account',
     'post',
-    'category'
+    'category',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
