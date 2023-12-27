@@ -7,27 +7,42 @@ from .models import Post
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
+from .permissions import IsStuff, IsOwner
+
+
+
+
 
 class StandartResultPagination(PageNumberPagination):
     page_size = 1
     page_query_param = 'page'
 
-class PostListCreateAPIView(generics.ListCreateAPIView):
+class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticated, IsStuff]
     pagination_class = StandartResultPagination
     filter_backends = (SearchFilter, DjangoFilterBackend)
     search_fields = ['title', 'body']
     filterset_fields = ['category']
     # filterset_class = PostModelFilter
 
+    def get(self, request, *args, **kwargs):
+        if self.request.method in ['PATCH', 'PUT', 'DELETE']:
+            return [permissions.IsAuthenticated(), IsOwner()]
+        return [permissions.AllowAny()]
+
+
     def perform_create(self, serializer):
-        posts = Post.objects.select_related('category')
-        for post in posts:
-            print(post.category)
+        # select_related | join
+        # posts = Post.objects.select_related('category') 
+        # for post in posts:
+        #     print(post.category)
         
         serializer.save(owner=self.request.user)
+
+
+
     # def get_queryset(self):
     #     queryset = super().get_queryset()
     #     search_query = self.request.query_params.get('search', None)
@@ -60,3 +75,7 @@ class PostListCreateAPIView(generics.ListCreateAPIView):
 # mixins | generics
 # написать логику поиска и филтрации для постов
 # написать кастомный permission который проверяет поле is_staff| staff status
+        
+# написать модельку коментариев в отдельном приложении соment 
+# с полями content, owner, created_at, post, 
+# crud & serializer & @action 
