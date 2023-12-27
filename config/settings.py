@@ -41,14 +41,14 @@ INSTALLED_APPS = [
     
     # libs
     'rest_framework',
-    'rest_framework.authtoken',
-    "django_filters",
+    'rest_framework.authtoken', 
+    'django_filters',
+    'drf_yasg',
 
     # apps
     'account',
     'post',
-    'category',
-    'drf_yasg'
+    'category'
 ]
 
 MIDDLEWARE = [
@@ -143,4 +143,15 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         'rest_framework.authentication.TokenAuthentication'
     ]
+}
+
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
 }
