@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     # apps
     'account',
     'post',
-    'category'
+    'category',
+    'comment'
 ]
 
 MIDDLEWARE = [
@@ -144,6 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication'
     ]
 }
+
 
 SWAGGER_SETTINGS = {
    'SECURITY_DEFINITIONS': {

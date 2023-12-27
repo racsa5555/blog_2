@@ -8,6 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from .permissions import IsStuff, IsOwner
 
+
 class StandartResultPagination(PageNumberPagination):
     page_size = 2
     page_query_param= 'page'
@@ -22,10 +23,13 @@ class PostViewSet(ModelViewSet):
     filterset_fields = ['category']
     # filterset_class = PostModelFilter
 
+
     def get_permissions(self):
+
         if self.request.method in ['PATCH', 'PUT', 'DELETE']:
             return [permissions.IsAuthenticated(), IsOwner()]
         return [permissions.AllowAny()]
+
 
     def perform_create(self, serializer):
         # posts = Post.objects.select_related('category')
@@ -33,6 +37,9 @@ class PostViewSet(ModelViewSet):
         #     print(post.category)
         
         serializer.save(owner=self.request.user)
+
+
+
     # def get_queryset(self):
     #     queryset = super().get_queryset()
     #     search_query = self.request.query_params.get('search', None)
@@ -65,6 +72,7 @@ class PostViewSet(ModelViewSet):
 # mixins | generics
 # написать логику поиска и филтрации для постов
 # написать кастомный permission который проверяет поле is_staff| staff status
+
 # написать модельку комметариев в отделном приложении "comment"
 # с полями content, owner, created_at, post
 # crud & serializer & @action
