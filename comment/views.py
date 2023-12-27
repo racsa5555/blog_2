@@ -8,8 +8,8 @@ from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
 from .permissions import IsStuff, IsOwner
-
-
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 class StandartResultPagination(PageNumberPagination):
     page_size = 1
@@ -25,6 +25,12 @@ class CommentViewSet(ModelViewSet):
     search_fields = ['content']
     filterset_fields = ['post']
     # filterset_class = PostModelFilter
+
+    @action(detail=False, methods=['GET'])
+    def get_user_comments(self, request):
+        user_comments = Comment.objects.filter(owner=request.user)
+        serializer = CommentSerializer(user_comments, many=True)
+        return Response(serializer.data)
 
 
     def get(self, request, *args, **kwargs):
